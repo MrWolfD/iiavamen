@@ -12,7 +12,7 @@ const CONFIG = {
 
 const API_BASE = "https://api.iiava.koshelev.agency";
 
-// ✅ ЖЕНСКИЙ БОТ
+// ✅ МУЖСКОЙ БОТ
 const BOT_PREFIX = "/men";
 
 const TG_PROFILE_URL = `${API_BASE}${BOT_PREFIX}/tg/profile`;
