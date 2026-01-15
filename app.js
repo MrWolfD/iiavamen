@@ -12,7 +12,7 @@ const CONFIG = {
 
 const API_BASE = "https://api.iiava.koshelev.agency";
 
-// ✅ МУЖСКОЙ БОТ
+// ✅ МУЖСКОЙ БОТ (ИИ-Ава MEN)
 const BOT_PREFIX = "/men";
 
 const TG_PROFILE_URL = `${API_BASE}${BOT_PREFIX}/tg/profile`;
@@ -148,6 +148,10 @@ function mapPromptFromDb(p) {
   const categories = Array.isArray(p.categories) ? p.categories : [];
   const category = categories.length ? String(categories[0]) : 'без категории';
 
+  // Глобальные счётчики (по всем пользователям в рамках бота)
+  const copiesCount = Number(p.copies_count ?? p.copies ?? 0) || 0;
+  const favoritesCount = Number(p.favorites_count ?? p.favorites ?? 0) || 0;
+
   return {
     id: Number(p.id),
     title: String(p.title ?? ''),
@@ -157,9 +161,9 @@ function mapPromptFromDb(p) {
     category,
     tags: categories,
 
-    // UI-цифры (пока персональные, если сервер не даёт общие)
-    copies: Number(p.copies_by_user ?? 0),
-    favorites: Number(p.favorites_count ?? 0),
+    // UI-цифры (глобальные)
+    copies: copiesCount,
+    favorites: favoritesCount,
 
     is_favorite: Boolean(p.is_favorite ?? false),
   };
@@ -835,15 +839,11 @@ async function copyCurrentPrompt() {
 
   utils.showToast('Промпт скопирован. Вставьте его в чат с ботом');
 
-  // 🔒 Если пользователь уже копировал этот промпт раньше — не увеличиваем счётчик повторно
-  if (Number(prompt.copies || 0) > 0) {
-    return;
-  }
-
   try {
     const res = await callEdge(PROMPT_COPY_URL, { prompt_id: prompt.id });
-    const copiesByUser = Number(res?.copies_by_user ?? res?.copies ?? res?.count ?? 1) || 1;
-    prompt.copies = copiesByUser;
+    // Глобальный счётчик копий после действия
+    const nextCopies = Number(res?.copies_count ?? res?.copies ?? res?.count ?? prompt.copies) || 0;
+    prompt.copies = nextCopies;
 
     // синхроним модалку
     const el = document.getElementById('promptModalCopies');
@@ -870,15 +870,10 @@ async function copyPromptDirectly(promptId) {
 
   utils.showToast('Промпт скопирован. Вставьте его в чат с ботом');
 
-  // 🔒 Если пользователь уже копировал этот промпт раньше — не увеличиваем счётчик повторно
-  if (Number(prompt.copies || 0) > 0) {
-    return;
-  }
-
   try {
     const res = await callEdge(PROMPT_COPY_URL, { prompt_id: prompt.id });
-    const copiesByUser = Number(res?.copies_by_user ?? res?.copies ?? res?.count ?? 1) || 1;
-    prompt.copies = copiesByUser;
+    const nextCopies = Number(res?.copies_count ?? res?.copies ?? res?.count ?? prompt.copies) || 0;
+    prompt.copies = nextCopies;
   } catch (e) {
     console.warn("prompt_copy failed:", e);
   }
