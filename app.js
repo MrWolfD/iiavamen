@@ -295,7 +295,7 @@ const demoData = {
     earnedBonuses: 340,
     referrals: 12,
     generations: { total: 98, success: 79, unfinished: 11, canceled: 8 },
-    referralLink: "https://t.me/iiavabot?start=ref_224753455"
+    referralLink: "https://t.me/iiavamenbot?start=ref_224753455"
   },
 
   prompts: []
@@ -784,7 +784,7 @@ const modal = {
 
     const refCode = p.ref_code ?? '';
     document.getElementById('profileReferralLink').value =
-      refCode ? `https://t.me/iiavabot?start=ref_${refCode}` : (p.referralLink ?? '');
+      refCode ? `https://t.me/iiavamenbot?start=ref_${refCode}` : (p.referralLink ?? '');
 
     this.open(dom.profileModalOverlay);
   },
@@ -1244,7 +1244,7 @@ function initApp() {
     const refCode = (p.ref_code ?? '').toString().trim();
     // Реферальную ссылку показываем ТОЛЬКО при авторизации через Telegram WebApp
     if (isTelegramAuthorized() && refCode) {
-      dom.referralLink.value = `https://t.me/iiavabot?start=ref_${refCode}`;
+      dom.referralLink.value = `https://t.me/iiavamenbot?start=ref_${refCode}`;
     } else {
       dom.referralLink.value = '';
     }
